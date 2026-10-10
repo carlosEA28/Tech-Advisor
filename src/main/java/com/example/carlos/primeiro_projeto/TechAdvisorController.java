@@ -17,14 +17,26 @@ import java.util.List;
 @RequestMapping("/advisor")
 public class TechAdvisorController {
     private final ChatClient chatClient;
+    private final ChatClient chatClientWithDefaultPersona;
 
-    public TechAdvisorController(ChatClient.Builder chatClient) {
+    public TechAdvisorController(ChatClient.Builder chatClient,
+                                 ChatClient.Builder chatClientWithDefaultPersona) {
         this.chatClient = chatClient.build();
+        this.chatClientWithDefaultPersona = chatClientWithDefaultPersona.defaultSystem("You are a strict technical interviewer conducting a Java Backend interview"
+                + "Ask probing follow-up questions in your response").build();
     }
 
     @GetMapping("/advise")
     public String Advise(){
         return chatClient.prompt("Explain Spring boot in simple terms.")
+                .call()
+                .content();
+    }
+
+    @GetMapping("/advise-with-default-persona")
+    public String AdviseWithDefaultPersona(@RequestParam String question){
+        return chatClientWithDefaultPersona.prompt()
+                .user(question)
                 .call()
                 .content();
     }
