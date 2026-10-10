@@ -22,9 +22,18 @@ public class TechAdvisorController {
         this.chatClient = chatClient.build();
     }
 
-    @GetMapping
+    @GetMapping("/advise")
     public String Advise(){
         return chatClient.prompt("Explain Spring boot in simple terms.")
+                .call()
+                .content();
+    }
+
+    @GetMapping("/system-prompt")
+    public String SystemPrompts(@RequestParam String person,@RequestParam String question){
+        return chatClient.prompt("Explain Spring boot in simple terms.")
+                .system("You are a helpful experienced" + person + "Tutor.")
+                .user(question)
                 .call()
                 .content();
     }
