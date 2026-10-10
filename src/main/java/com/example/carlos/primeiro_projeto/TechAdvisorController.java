@@ -6,12 +6,14 @@ import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/advisor")
@@ -31,6 +33,23 @@ public class TechAdvisorController {
         return chatClient.prompt("Explain Spring boot in simple terms.")
                 .call()
                 .content();
+    }
+
+    @GetMapping("/prompt-variables")
+    public String PromptVariables(@RequestParam String language,@RequestParam String task){
+
+        // Cria um modelo de prompt com variáveis para linguagem e tarefa.
+        PromptTemplate promptTemplate = new PromptTemplate("""
+                Write a short {language} code snippet that demonstrates how to {task}. Include comments to explain the code.
+                """);
+
+        // Cria um prompt preenchendo as variáveis com os valores fornecidos na requisição.
+        Prompt prompt = promptTemplate.create(Map.of("language", language,"task", task));
+
+        return "<pre>" + chatClient.prompt(prompt)
+                .call()
+                .content()
+                + "</pre>";
     }
 
     @GetMapping("/advise-with-default-persona")
@@ -65,7 +84,7 @@ public class TechAdvisorController {
         Prompt prompt = new Prompt(List.of(systemMessage, fisrtMessage, priorReply, newUserMessage));
 
         // Envia o historico ao modelo, executa a chamada e retorna apenas o texto da resposta.
-        return chatClient.prompt(prompt).call().content();
+        return "<pre>" + chatClient.prompt(prompt).call().content() + "</pre>";
     }
 
 }
