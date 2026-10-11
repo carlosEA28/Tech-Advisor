@@ -40,6 +40,7 @@ public class AdvisorsDemo {
 
     }
 
+    //safeguards: e um advisor que permite definir palavras sensíveis e uma resposta de falha personalizada caso o modelo tente gerar uma resposta sobre um tópico sensível.
     @GetMapping(value = "/safeguards")
     public String safeGuards(@RequestParam String topic){
 
