@@ -56,4 +56,16 @@ public class AdvisorsDemo {
                 .content();
 
     }
+
+    @GetMapping(value = "/persona")
+    public String persona(@RequestParam String persona, @RequestParam String question){
+
+
+        return chatClient.prompt()
+                .user(question)
+                .advisors(new PersonaAdvisor(persona, 0))
+                .call()
+                .content();
+
+    }
 }
