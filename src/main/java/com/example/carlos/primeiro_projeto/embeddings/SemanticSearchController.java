@@ -102,4 +102,28 @@ public class SemanticSearchController {
                 .map(doc -> new DocumentResult(doc.getId(), doc.getText(), doc.getScore()))
                 .toList();
     }
+
+    // Esse método realiza uma busca semântica nos documentos armazenados no VectorStore com base em uma consulta fornecida.
+    //  Ele permite filtrar os resultados por categoria, se desejado.
+    @GetMapping("/search/metadata")
+    public List<DocumentResult> searchMetadata(@RequestParam String query,
+                                               @RequestParam(defaultValue = "4") int topK,
+                                               @RequestParam(required = false) String category) {
+        SearchRequest.Builder builder = SearchRequest.builder()
+                .query(query)
+                .topK(topK);
+
+        if (category != null)
+            builder.filterExpression("category == '" + category + "'");
+
+        return vectorStore.similaritySearch(
+                        builder.build()
+                ).stream()
+                .map(
+                        doc
+                                -> new DocumentResult(doc.getId(),
+                                doc.getText(),
+                                doc.getScore()))
+                .toList();
+    }
 }
