@@ -60,4 +60,15 @@ public class PersistentChatMemory {
     public void deleteConversationById(@PathVariable String conversationId) {
         chatMemoryRepository.deleteByConversationId(conversationId);
     }
+
+    @GetMapping("/users/{userId}/sessions/{sessionId}/chat")
+    public String getConversationByIdAndSession (@PathVariable String userID, @PathVariable String sessionId) {
+        String conversationId = userID + "-" + sessionId;
+        return chatClient.prompt()
+                .user("message")
+                .advisors(a -> a.advisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
+                        .param(chatMemory.CONVERSATION_ID, conversationId))
+                .call()
+                .content();
+    }
 }
